@@ -1,25 +1,57 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useParams,
+  useNavigate
+} from 'react-router-dom';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import Results from './components/Results';
+import Search from './components/Search';
+import Nav from './components/Nav';
+
+function SearchWithHooks(props) {
+  const navigate = useNavigate();
+  return <Search {...props} navigate={navigate} />;
+}
+
+function ResultsWrapper({ defaultSearchTerm }) {
+  const { query } = useParams();
+  return <Results query={query || defaultSearchTerm} />;
+}
+
+class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      defaultSearchTerm: 'Cat'
+    };
+  }
+
+  render() {
+    return (
+      <Router>
+        <div className="App">
+          <div className="container">
+            <SearchWithHooks />
+            <Nav />
+            <Routes>
+              <Route
+                exact
+                path="/"
+                element={<ResultsWrapper defaultSearchTerm={this.state.defaultSearchTerm} />}
+              />
+              <Route
+                path="/:query"
+                element={<ResultsWrapper defaultSearchTerm={this.state.defaultSearchTerm} />}
+              />
+            </Routes>
+          </div>
+        </div>
+      </Router>
+    );
+  }
 }
 
 export default App;
